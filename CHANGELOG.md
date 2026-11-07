@@ -19,3 +19,7 @@ Dashboard title, sidebar, footer, tagline, report, foundation, notebook, present
 ## Presentation timing update
 
 The simpler presentation script now targets 6 minutes 30 seconds, including live demonstrations, with a requested maximum of 7 minutes. Added plain-language explanations of the data split, risk ranking, and staff capacity. Updated the PDF and recording guide.
+
+## First-use clarity
+
+Added a short getting-started guide, clearer tab names and measure explanations, visible booking-channel selections, practical model results before technical detail, and plain-language review-capacity and concentration explanations. Model scores, data, and ranking logic are unchanged. Removed sections stay removed.

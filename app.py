@@ -120,8 +120,8 @@ with st.sidebar:
         for name in SEGMENTS:
             st.session_state.setdefault(f'segment::{name}', True)
         selected_count = sum(st.session_state[f'segment::{name}'] for name in SEGMENTS)
-        with st.expander('Market segments',expanded=False):
-            st.caption('Choose segments to include.')
+        with st.expander('Booking channels',expanded=False):
+            st.caption('Choose how guests booked. Online TA means online travel agency; Offline TA/TO means offline travel agency or tour operator.')
             select_all, clear = st.columns(2)
             select_all.button('All',help='Select all market segments',key='segments-all',on_click=set_segments,args=(True,),use_container_width=True)
             clear.button('Clear',key='segments-clear',on_click=set_segments,args=(False,),use_container_width=True)
@@ -129,24 +129,34 @@ with st.sidebar:
                 for name in SEGMENTS:
                     st.checkbox(name,key=f'segment::{name}')
             segments = [name for name in SEGMENTS if st.session_state[f'segment::{name}']]
-        st.caption('All market segments included' if len(segments)==df.market_segment.nunique() else f'{len(segments)} of {df.market_segment.nunique()} segments included')
+        st.caption('All booking channels included' if len(segments)==df.market_segment.nunique() else f'{len(segments)} of {df.market_segment.nunique()} channels included')
         st.button('Reset all filters',on_click=reset_filters,use_container_width=True)
-    st.markdown('<div class="sidebar-foot"><strong>Your analysis workspace</strong><br>Filters apply to the overview and follow-up queue. Model evaluation uses a fixed test set.<br><br>Group 4.2 · Enriquez &amp; Patron</div>',unsafe_allow_html=True)
+    st.markdown('<div class="sidebar-foot"><strong>Your analysis workspace</strong><br>Filters change Booking overview and Bookings to review. Prediction results always use the same later test bookings.<br><br>Group 4.2 · Enriquez &amp; Patron</div>',unsafe_allow_html=True)
 
 period = f'{dates[0]:%d %b %Y} - {dates[1]:%d %b %Y}' if len(dates)==2 else 'Choose an arrival period'
 hotel_scope = 'Both properties' if len(hotels)==2 else (hotels[0] if hotels else 'No properties selected')
-segment_scope = 'All market segments' if len(segments)==df.market_segment.nunique() else f'{len(segments)} market segments'
-st.markdown(f'''<div class="hero"><div class="hero-top"><span class="hero-eyebrow">RESERVATION INTELLIGENCE</span><span class="hero-badge">Historical analysis · 2015-2017</span></div><h1>Roomors</h1><div class="hero-description">Every booking tells a story.<br>Hotel booking analytics and cancellation risk prioritization.</div><div class="hero-scope"><span>{period}</span><span>{hotel_scope}</span><span>{segment_scope}</span></div></div>''',unsafe_allow_html=True)
+segment_scope = 'All booking channels' if len(segments)==df.market_segment.nunique() else (', '.join(segments) if 0<len(segments)<=2 else f'{len(segments)} booking channels')
+st.markdown(f'''<div class="hero"><div class="hero-top"><span class="hero-eyebrow">RESERVATION INTELLIGENCE</span><span class="hero-badge">Historical analysis · 2015-2017</span></div><h1>Roomors</h1><div class="hero-description">Every booking tells a story.<br>Explore cancellation patterns and find bookings to prioritize for follow-up.</div><div class="hero-scope"><span>{period}</span><span>{hotel_scope}</span><span>{segment_scope}</span></div></div>''',unsafe_allow_html=True)
 if len(dates)!=2:
     st.info('Choose a start and end date to view bookings.');st.stop()
 d = df[df.hotel.isin(hotels)&df.market_segment.isin(segments)&df.arrival_date.between(pd.Timestamp(dates[0]),pd.Timestamp(dates[1]))].copy()
 if d.empty:
     st.info('No bookings match your filters. Select another hotel or segment, or reset the filters.');st.stop()
+with st.expander('New to Roomors? Start here',expanded=False):
+    st.write('1. Booking overview: see what happened, then filter by hotel, arrival dates, or booking channel.')
+    st.write('2. Prediction results: see how well the model identifies cancellations in later bookings. Open the detailed results for methods, scores, and curves.')
+    st.write('3. Bookings to review: choose how many bookings your team can review and explore the highest-risk records first.')
+    st.caption('The data covers July 2015 to August 2017. The overview uses the full cleaned dataset; prediction results and the review list use a smaller, later test period.')
 with st.container(key='headline-kpis'):
-    for col,label,value in zip(st.columns(5),['Bookings','Canceled bookings','Cancellation rate','Median lead time','Median daily rate'],[f'{len(d):,}',f'{d.is_canceled.sum():,}',f'{d.is_canceled.mean():.1%}',f'{d.lead_time.median():.0f} days',f'{d.adr.median():.2f}']):
-        col.metric(label,value)
-st.caption('Rates are in dataset units. Booking volume includes cancellations and does not measure occupancy or realized revenue.')
-overview, performance, queue_tab=st.tabs(['Overview','Model performance','Follow-up queue'])
+    descriptions=['Number of bookings matching your current filters, including canceled bookings.',
+                  'Number of selected bookings that were canceled.',
+                  'Canceled bookings divided by all selected bookings.',
+                  'Median days between booking and arrival. Half of selected bookings have less notice and half have more.',
+                  'Median daily room rate, in the original dataset units. This is not hotel earnings.']
+    for col,label,value,help_text in zip(st.columns(5),['Bookings','Canceled bookings','Cancellation rate','Typical booking notice','Typical daily rate'],[f'{len(d):,}',f'{d.is_canceled.sum():,}',f'{d.is_canceled.mean():.1%}',f'{d.lead_time.median():.0f} days',f'{d.adr.median():.2f}'],descriptions):
+        col.metric(label,value,help=help_text)
+st.caption('These numbers describe your selected bookings. Typical values use the median; daily rates use dataset units. Booking counts do not measure occupied rooms or hotel earnings.')
+overview, performance, queue_tab=st.tabs(['Booking overview','Prediction results','Bookings to review'])
 
 def grouped(column):
     g=d.groupby(column,observed=True).is_canceled.agg(Bookings='size',Canceled='sum',Rate='mean').reset_index()
@@ -173,7 +183,7 @@ with overview:
     st.markdown(f'<div class="insight"><b>At a glance</b> · {int(d.is_canceled.sum()):,} of {len(d):,} selected bookings were canceled ({d.is_canceled.mean():.1%}). Use the comparisons below to decide where to focus reservation reviews.</div>',unsafe_allow_html=True)
     a,b=st.columns(2,gap='medium')
     with a,st.container(border=True,key="panel-0"):
-        card_title('Cancellation by hotel','Which property has higher cancellation exposure?')
+        card_title('Cancellation by hotel','Which hotel has the larger share of canceled bookings?')
         g=grouped('hotel')
         fig=px.bar(g,x='hotel',y='Cancellation rate (%)',color='hotel',color_discrete_map=HOTEL_COLORS,hover_data=['Bookings','Canceled'],text=g['Cancellation rate (%)'].map(lambda v:f'{v:.1f}%'))
         fig.update_layout(showlegend=False);fig.update_traces(textposition='outside',cliponaxis=False,width=.46);fig.update_xaxes(title=None);fig.update_yaxes(range=[0,max(10,g['Cancellation rate (%)'].max()*1.2)])
@@ -181,7 +191,7 @@ with overview:
         row=g.sort_values('Rate',ascending=False).iloc[0]
         st.caption(f'{row.hotel}: {row.Rate:.1%} canceled across {int(row.Bookings):,} records. Compare volume before assigning follow-up capacity.')
     with b,st.container(border=True,key="panel-1"):
-        card_title('Cancellation by segment','Which booking channels need a closer look?')
+        card_title('Cancellation by booking channel','Which booking channels need a closer look?')
         all_segments=grouped('market_segment').sort_values('Rate')
         small_segments=all_segments[all_segments.Bookings<30]
         g=all_segments[all_segments.Bookings>=30].copy()
@@ -207,7 +217,7 @@ with overview:
         fig.update_traces(line_width=2,fillcolor='rgba(52,120,246,.10)');fig.update_xaxes(title=None);chart(fig)
         row=x.loc[x.Bookings.idxmax()];st.caption(f'{row.month:%b %Y} has the most selected records ({int(row.Bookings):,}). Review staffing and confirmation workload around busy arrival periods. These counts are not occupancy; partial years limit seasonal conclusions.')
     with b,st.container(border=True,key="panel-3"):
-        card_title('Booking lead time','Does advance notice relate to cancellation?')
+        card_title('Days between booking and arrival','Are bookings made further ahead canceled more often?')
         d['Lead-time group']=pd.cut(d.lead_time,[-1,7,30,90,180,365,float('inf')],labels=['0-7','8-30','31-90','91-180','181-365','366+'])
         g=grouped('Lead-time group')
         fig=px.bar(g,x='Lead-time group',y='Cancellation rate (%)',hover_data=['Bookings','Canceled'],color_discrete_sequence=[INK],text=g['Cancellation rate (%)'].map(lambda v:f'{v:.1f}%'))
@@ -217,7 +227,7 @@ with overview:
             st.caption(f'{high_row["Lead-time group"]} days has the highest selected cancellation rate ({high_row.Rate:.1%}; n={int(high_row.Bookings):,}), compared with {low_row.Rate:.1%} for {low_row["Lead-time group"]} days. Prioritize confirmation review, while comparing group sizes. This is association, not causation.')
     a,b=st.columns(2,gap='medium')
     with a,st.container(border=True,key="panel-4"):
-        card_title('Daily rate distribution','How do typical rates compare across properties?')
+        card_title('Daily room rates','How do typical rates and their spread compare across hotels?')
         high=d.adr.quantile(.99);view=d[d.adr.between(0,high)]
         fig=px.box(view,x='hotel',y='adr',points=False,color='hotel',color_discrete_map=HOTEL_COLORS,labels={'adr':'Daily rate · dataset units'})
         fig.update_layout(showlegend=False);fig.update_xaxes(title=None);chart(fig)
@@ -233,22 +243,34 @@ with overview:
     st.download_button('Export filtered bookings',d.drop(columns=['Lead-time group'],errors='ignore').to_csv(index=False),'selected_bookings.csv','text/csv')
 
 with performance:
-    st.subheader('Model performance')
-    st.caption('Fixed chronological test set · Classification threshold 0.50 · Sidebar filters do not change these results')
+    st.subheader('Prediction results')
+    st.caption('How well does the model identify cancellations? These results use the same later test bookings, regardless of your filters.')
     m=pd.read_csv(ROOT/'results/model_metrics.csv');test=m[m.split=='test'].copy();selected=test[test.model==summary['selected_model']].iloc[0]
-    st.markdown(f'<div class="insight"><b>{summary["selected_model"]}</b> was selected on validation average precision. The test period starts {summary["cutoff_test"]}. These results describe historical performance.</div>',unsafe_allow_html=True)
-    for c,k,label in zip(st.columns(4),['roc_auc','average_precision','precision','recall'],['ROC-AUC','Average precision','Precision','Recall']):c.metric(label,f'{selected[k]:.3f}')
-    st.info(f'At the fixed threshold, the selected model identifies {int(selected.tp):,} of {int(selected.tp+selected.fn):,} test cancellations and misses {int(selected.fn):,}. It also flags {int(selected.fp):,} bookings that did not cancel. Use this as a prioritization aid, not an automatic cancellation decision.')
-    a,b=st.columns(2)
-    with a,st.container(border=True,key="panel-6"):
-        card_title('Compare models','Test ranking quality · higher is better')
-        v=test.melt(id_vars='model',value_vars=['roc_auc','average_precision'],var_name='Metric',value_name='Score');v.Metric=v.Metric.map({'roc_auc':'ROC-AUC','average_precision':'Average precision'})
-        fig=px.bar(v,x='Score',y='model',color='Metric',orientation='h',barmode='group',color_discrete_sequence=[INK,BLUE]);fig.update_yaxes(title=None);fig.update_xaxes(range=[0,1]);chart(fig,330)
-    with b,st.container(border=True,key="panel-7"):
-        card_title('What influences the ranking?','Validation permutation importance · predictive association')
-        im=pd.read_csv(ROOT/'results/feature_importance.csv').head(7).iloc[::-1];fig=px.bar(im,x='importance_mean',y='feature',orientation='h',color_discrete_sequence=[BLUE],error_x='importance_sd');fig.update_yaxes(title=None);fig.update_xaxes(title='Decrease in average precision');chart(fig,330)
-    display=test[['model','accuracy','precision','recall','f1','roc_auc','average_precision']].rename(columns={'model':'Model','accuracy':'Accuracy','precision':'Precision','recall':'Recall','f1':'F1','roc_auc':'ROC-AUC','average_precision':'Average precision'})
-    st.dataframe(display,hide_index=True,use_container_width=True,column_config={c:st.column_config.NumberColumn(format='%.3f') for c in display.columns if c!='Model'})
+    st.write(f'We chose {summary["selected_model"].lower()} using an earlier validation period, then checked it on {int(selected.n):,} later bookings. The test period starts {summary["cutoff_test"]}.')
+    practical=[('Flagged bookings that canceled',f'{selected.precision:.0%}','Precision: of all bookings flagged by the model at the 0.50 cutoff, this share actually canceled.'),
+               ('Actual cancellations found',f'{selected.recall:.0%}','Recall: the share of all actual test cancellations the model flagged at the 0.50 cutoff.'),
+               ('Actual cancellations missed',f'{1-selected.recall:.0%}','The share of actual test cancellations the model did not flag at the 0.50 cutoff.')]
+    for col,(label,value,help_text) in zip(st.columns(3),practical):col.metric(label,value,help=help_text)
+    st.info(f'At a score cutoff of 0.50, the model finds {int(selected.tp):,} of {int(selected.tp+selected.fn):,} cancellations and misses {int(selected.fn):,}. It also flags {int(selected.fp):,} bookings that did not cancel. This means it can help focus reviews, but it misses most cancellations at this cutoff.')
+    st.caption('The review list uses staff capacity to choose the highest-risk bookings. Its results differ from the fixed 0.50 cutoff shown here.')
+    with st.expander('Detailed model results',expanded=False):
+        st.caption('Ranking scores describe how well the model puts canceled bookings ahead of other bookings. They are not the percentage of predictions that are correct.')
+        score_help=['ROC-AUC measures ranking across canceled and non-canceled bookings. 0.5 is chance; 1.0 is perfect ranking.',
+                    'Average precision summarizes precision across recall levels. Compare it with the test cancellation rate (about 0.277).',
+                    'Precision is the share of flagged bookings that actually canceled at the 0.50 cutoff.',
+                    'Recall is the share of actual cancellations found at the 0.50 cutoff.']
+        for col,key,label,help_text in zip(st.columns(4),['roc_auc','average_precision','precision','recall'],['ROC-AUC','Average precision','Precision','Recall'],score_help):col.metric(label,f'{selected[key]:.3f}',help=help_text)
+        a,b=st.columns(2)
+        with a,st.container(border=True,key="panel-6"):
+            card_title('Compare models','Test ranking quality · higher is better')
+            v=test.melt(id_vars='model',value_vars=['roc_auc','average_precision'],var_name='Metric',value_name='Score');v.Metric=v.Metric.map({'roc_auc':'ROC-AUC','average_precision':'Average precision'})
+            fig=px.bar(v,x='Score',y='model',color='Metric',orientation='h',barmode='group',color_discrete_sequence=[INK,BLUE]);fig.update_yaxes(title=None);fig.update_xaxes(range=[0,1]);chart(fig,330)
+        with b,st.container(border=True,key="panel-7"):
+            card_title('What influences the ranking?','Validation permutation importance · predictive association')
+            im=pd.read_csv(ROOT/'results/feature_importance.csv').head(7).iloc[::-1];im['feature']=im['feature'].map(lambda value:value.replace('_',' ').capitalize());fig=px.bar(im,x='importance_mean',y='feature',orientation='h',color_discrete_sequence=[BLUE],error_x='importance_sd');fig.update_yaxes(title=None);fig.update_xaxes(title='Decrease in average precision');chart(fig,330)
+        display=test[['model','accuracy','precision','recall','f1','roc_auc','average_precision']].rename(columns={'model':'Model','accuracy':'Accuracy','precision':'Precision','recall':'Recall','f1':'F1','roc_auc':'ROC-AUC','average_precision':'Average precision'})
+        st.dataframe(display,hide_index=True,use_container_width=True,column_config={c:st.column_config.NumberColumn(format='%.3f') for c in display.columns if c!='Model'})
+        st.caption('Accuracy is the share of all predictions that are correct. F1 balances precision and recall. Random forest has better test ranking scores, but logistic regression was selected on validation data before this test.')
     with st.expander('ROC & precision-recall curves',expanded=False):
         st.caption('Final chronological test set · Thresholds are visualized, not tuned using these outcomes.')
         curve_view=st.radio('Curve view',['Selected model · interactive','All models · saved comparison'],horizontal=True,label_visibility='collapsed')
@@ -278,19 +300,24 @@ with performance:
         st.dataframe(m,hide_index=True,use_container_width=True)
 
 with queue_tab:
-    st.subheader('Follow-up queue')
-    st.caption('Prioritize confirmation activity using historical held-out bookings matching your filters.')
+    st.subheader('Bookings to review')
+    st.caption('Explore past test bookings, ranked from highest to lowest estimated cancellation risk. Your filters control which bookings appear.')
     q=pred[pred.hotel.isin(hotels)&pred.market_segment.isin(segments)&pred.arrival_date.between(pd.Timestamp(dates[0]),pd.Timestamp(dates[1]))].copy()
     if q.empty:st.info('No held-out bookings match this selection. Try a later arrival range or reset the filters.')
     else:
         with st.container(border=True,key="panel-8"):
-            fraction=st.slider('Review capacity · share of matching bookings (%)',5,30,10,5)
+            fraction=st.slider('How many bookings can your team review? (%)',5,30,10,5,help='10% selects the highest-risk tenth of matching test bookings. This sets the size of the list, not a cancellation probability cutoff.')
             queue,queue_stats=queue_summary(q,fraction);n=queue_stats['n']
-            for c,label,val in zip(st.columns(3),['Bookings to contact','Historical cancellations','Queue cancellation rate'],[f'{n:,}',f'{queue.is_canceled.sum():,}',f'{queue.is_canceled.mean():.1%}']):c.metric(label,val)
+            for c,label,val in zip(st.columns(3),['Bookings to contact','Canceled in this list','Cancellation rate in this list'],[f'{n:,}',f'{queue.is_canceled.sum():,}',f'{queue.is_canceled.mean():.1%}']):c.metric(label,val)
         capture_text=f"{queue_stats['capture']:.1%}" if queue_stats['capture'] is not None else 'not applicable (no cancellations in selection)'
         lift_text=f"{queue_stats['lift']:.2f}x" if queue_stats['lift'] is not None else 'not applicable'
-        st.info(f"Queue rate: {queue_stats['rate']:.1%}, compared with {queue_stats['baseline']:.1%} in the matching test cohort. Enrichment: {lift_text}. Share of matching cancellations captured: {capture_text}. This is retrospective concentration, not prevented cancellations.")
+        st.caption(f'Review the highest-risk {fraction}%: {n:,} of {len(q):,} matching test bookings. Increasing the percentage creates a longer contact list.')
+        st.info(f'In this list, {queue_stats["rate"]:.1%} of bookings canceled, compared with {queue_stats["baseline"]:.1%} of all matching test bookings. This shows where past cancellations were concentrated; it does not show cancellations prevented by contacting guests.')
+        with st.expander('Detailed review-list results',expanded=False):
+            st.write(f'The list contains {int(queue.is_canceled.sum()):,} canceled bookings out of {n:,} bookings to review. It includes {capture_text} of all cancellations in the matching test bookings.')
+            st.write(f'Cancellation concentration (lift): {lift_text}. A lift of 2 means the cancellation rate in the list is twice the rate in all matching test bookings.')
+            st.caption('The list ranks bookings by estimated risk. Changing team capacity changes its size; it does not change the fitted model.')
         columns=['review_reference','hotel','arrival_date','market_segment','lead_time','predicted_cancellation_risk']
-        st.dataframe(queue[columns],hide_index=True,use_container_width=True,column_config={'review_reference':'Review reference','hotel':'Hotel','arrival_date':st.column_config.DatetimeColumn('Arrival',format='DD MMM YYYY'),'market_segment':'Segment','lead_time':st.column_config.NumberColumn('Lead time (days)'),'predicted_cancellation_risk':st.column_config.ProgressColumn('Risk score',min_value=0,max_value=1,format='%.2f')})
+        st.dataframe(queue[columns],hide_index=True,use_container_width=True,column_config={'review_reference':'Review reference','hotel':'Hotel','arrival_date':st.column_config.DatetimeColumn('Arrival',format='DD MMM YYYY'),'market_segment':'Segment','lead_time':st.column_config.NumberColumn('Lead time (days)'),'predicted_cancellation_risk':st.column_config.ProgressColumn('Estimated cancellation risk',help='Model estimate from 0 to 1. Higher values appear first; a high score does not guarantee cancellation.',min_value=0,max_value=1,format='%.2f')})
         st.download_button('Export follow-up queue',queue[columns].to_csv(index=False),'follow_up_queue.csv','text/csv')
         st.caption('Review references identify rows in this historical test extract; they are not real property-management reservation IDs. Exported queues exclude eventual cancellation outcomes.')

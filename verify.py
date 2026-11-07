@@ -50,3 +50,17 @@ app.slider[0].set_value(20).run()
 assert not app.exception
 assert any(v.label=='Bookings to contact' and v.value=='3,513' for v in app.metric)
 print('PASS: arrival-period filtering, no-heldout-cohort handling, and 20% queue capacity.')
+
+assert [tab.label for tab in app.tabs]==['Booking overview','Prediction results','Bookings to review']
+metric_values={v.label:v.value for v in app.metric}
+assert metric_values['Flagged bookings that canceled']=='54%'
+assert metric_values['Actual cancellations found']=='22%'
+assert metric_values['Actual cancellations missed']=='78%'
+assert any(e.label=='Detailed model results' for e in app.expander)
+assert any(e.label=='Detailed review-list results' for e in app.expander)
+assert not any(e.label=='Recommended next steps' for e in app.expander)
+app.radio[0].set_value('Selected model · interactive').run();assert not app.exception
+specs=[json.loads(e.proto.spec) for e in app.get('plotly_chart')]
+curves=[v for v in specs if any(t.get('name')=='Logistic regression' for t in v['data']) or v['layout'].get('xaxis',{}).get('title',{}).get('text')=='Recall']
+assert len(curves)==2 and all(t['type']=='scatter' for v in curves for t in v['data'])
+print('PASS: plain-language navigation, practical model results, optional analytical detail, and SVG curves.')

@@ -2,6 +2,8 @@
 
 *Every booking tells a story.*
 
+[Open the live dashboard](https://roomors-group42.streamlit.app/)
+
 Group 4.2 · Job Russel Enriquez and John Cyruz Patron · BSIT-401I
 
 A Streamlit dashboard and reproducible cancellation-classification study for Foundations of Business Analytics. You can run it locally or deploy it from GitHub to Streamlit Community Cloud. Local use requires no hosting account or API key. GitHub Pages cannot execute this Streamlit application.
@@ -31,7 +33,7 @@ The source CSV is `data/hotel_bookings.csv`. The script writes the deduplicated 
 
 ## Dashboard
 
-The interface uses navy and blue on neutral surfaces, system sans-serif text and monospaced KPI numerals, rounded panels, and compact macOS-inspired navigation. Market segments use a collapsible checkbox list with All and Clear controls; Reset filters restores the full sample. Model performance and the follow-up queue have separate views.
+The interface uses navy and blue on neutral surfaces, system sans-serif text and monospaced KPI numerals, rounded panels, and compact macOS-inspired navigation. Booking channels use a collapsible checkbox list with All and Clear controls; Reset filters restores the full sample. Prediction results and the follow-up queue have separate views.
 
 - Five headline KPIs, six descriptive charts, and filters for hotel, segment, and arrival dates.
 - Every descriptive chart has a conclusion and decision note.
@@ -83,3 +85,5 @@ Deployment settings when this folder is the repository root:
 If the repository contains this folder under `final_project/`, use `final_project/app.py` as the main file instead. Configure viewer access so your professor can open the app, then share the generated `streamlit.app` URL. The computer does not need to stay on. Verify the overview, filters, model results, and queue on the deployed app before submitting its URL.
 
 Official deployment guide: https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/deploy
+
+First-time users can open **New to Roomors? Start here** for a short guide. Prediction results lead with practical cancellation detection and missed cases; detailed scores and comparisons, ROC/precision-recall curves, and evaluation methods remain available in expandable sections. Bookings to review explains team capacity and offers detailed concentration and capture results.

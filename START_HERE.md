@@ -2,7 +2,7 @@
 
 ## Open the dashboard
 
-Follow README.md to install the pinned packages, then run `streamlit run app.py` from this folder. The application and its prepared results run locally. A public deployment has not been created by this project package.
+Follow README.md to install the pinned packages, then run `streamlit run app.py` from this folder. The application and its prepared results run locally. The public dashboard is available at https://roomors-group42.streamlit.app/.
 
 ## Files for the assignment
 
@@ -22,8 +22,8 @@ The presentation still needs to be recorded by both members, with visible faces,
 1. Reset all filters. Explain the five indicators and hotel comparison.
 2. Select Resort only, then reset. Use the segment checkboxes to select Online TA, then click All.
 3. Explain the six descriptive charts. Small selected groups (under 30 records) are listed separately; they remain in KPI totals.
-4. Open Model performance. Discuss both the strengths and missed cancellations. Open the interactive ROC and precision-recall curves; the selected model is blue. The saved three-model comparison remains available.
-5. Open Follow-up queue. At 10%, explain workload, cancellation concentration, capture, and the distinction from cancellations prevented. Show 20%, then restore 10%.
+4. Open Prediction results, then expand Detailed model results. Discuss both the strengths and missed cancellations. Open the interactive ROC and precision-recall curves; the selected model is blue. The saved three-model comparison remains available.
+5. Open Bookings to review. At 10%, explain workload, cancellation concentration, capture, and the distinction from cancellations prevented. Show 20%, then restore 10%.
 
 ## Numbers to keep consistent
 
