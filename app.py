@@ -44,7 +44,6 @@ h3{font-size:1.05rem!important;font-weight:600!important;letter-spacing:-.01rem}
 .eyebrow{font-size:10px;font-weight:650;letter-spacing:1.7px;color:#65748B;margin-bottom:8px}
 .status{display:inline-block;border:1px solid #DFE6F1;background:#EDF3FF;color:#172B4D;border-radius:20px;padding:6px 11px;font-size:11px;font-weight:500}
 .insight{padding:13px 16px;border-left:3px solid #3478F6;background:#EDF3FF;border-radius:0 9px 9px 0;color:#172B4D;font-size:13px;line-height:1.65;margin:8px 0 20px}
-.footer{font-size:11px;color:#65748B;border-top:1px solid #E5E9F0;margin-top:28px;padding-top:15px}
 @media(max-width:900px){.stMainBlockContainer{padding:4.5rem 1rem 2rem}h1{font-size:1.6rem!important}[data-testid="stMetric"]{padding:12px}[data-testid="stMetricValue"]{font-size:1.3rem!important}.stTabs [data-baseweb="tab"]{padding:0 12px}}
 
 section[data-testid="stSidebar"] [data-testid="stSidebarContent"]{padding-top:12px}
@@ -288,7 +287,6 @@ with queue_tab:
             fraction=st.slider('Review capacity · share of matching bookings (%)',5,30,10,5)
             queue,queue_stats=queue_summary(q,fraction);n=queue_stats['n']
             for c,label,val in zip(st.columns(3),['Bookings to contact','Historical cancellations','Queue cancellation rate'],[f'{n:,}',f'{queue.is_canceled.sum():,}',f'{queue.is_canceled.mean():.1%}']):c.metric(label,val)
-        st.caption('Historical outcomes are shown for evaluation. Staff would not know them at contact time. Capacity changes the queue size, not the trained model.')
         capture_text=f"{queue_stats['capture']:.1%}" if queue_stats['capture'] is not None else 'not applicable (no cancellations in selection)'
         lift_text=f"{queue_stats['lift']:.2f}x" if queue_stats['lift'] is not None else 'not applicable'
         st.info(f"Queue rate: {queue_stats['rate']:.1%}, compared with {queue_stats['baseline']:.1%} in the matching test cohort. Enrichment: {lift_text}. Share of matching cancellations captured: {capture_text}. This is retrospective concentration, not prevented cancellations.")
@@ -298,4 +296,3 @@ with queue_tab:
         st.caption('Review references identify rows in this historical test extract; they are not real property-management reservation IDs. Exported queues exclude eventual cancellation outcomes.')
         with st.expander('Recommended next steps'):
             st.write('Confirm arrival intent and booking details politely. Offer modifications consistent with existing policy. A risk score alone should never trigger a penalty or cancellation. Use a randomized pilot before claiming business impact.')
-st.markdown('<div class="footer">Roomors · Group 4.2 &nbsp; / &nbsp; Local analytics workspace &nbsp; / &nbsp; Historical data, not a live reservations feed</div>',unsafe_allow_html=True)
