@@ -10,7 +10,7 @@ Read only the **Say** paragraphs. Follow the **On screen** steps while speaking 
 
 ## Before recording
 
-- Start the local dashboard, maximize the browser, click **Reset all filters**, and open **Overview**. Confirm **87,396** bookings.
+- Start the local dashboard, maximize the browser, click **Reset all filters**, and open **Booking overview**. Confirm **87,396** bookings.
 - Prepare screen sharing, clear microphone audio, visible faces, and the **official JRU background**, as required by the assignment. Keep each speaker visible during their section.
 - Decide who controls the mouse during the handoff. Keep the script outside the shared dashboard window.
 
@@ -52,13 +52,13 @@ City Hotel has a higher cancellation rate than Resort Hotel. Online travel agenc
 
 1. Remove **City** from **Hotel properties**, leaving **Resort**. Show **33,968 bookings** and approximately **23.5% cancellation rate**.
 2. Click **Reset all filters**.
-3. Expand **Market segments**, click **Clear**, and check **Online TA**. The temporary empty-selection message after Clear is expected. Show **51,618 bookings** and approximately **35.3% cancellation rate**.
+3. Expand **Booking channels**, click **Clear**, and check **Online TA**. The temporary empty-selection message after Clear is expected. Show **51,618 bookings** and approximately **35.3% cancellation rate**.
 4. Click **All**, then collapse the segment panel.
 5. Scroll briefly through the four remaining descriptive charts. Return to the top.
 
 **Say:**
 
-The Overview has five key measures, or KPIs, and six charts. Selecting Resort shows 33,968 bookings, with about 23.5 percent canceled. Reset brings back both hotels.
+The Booking overview has five key measures, or KPIs, and six charts. Selecting Resort shows 33,968 bookings, with about 23.5 percent canceled. Reset brings back both hotels.
 
 Selecting only Online TA shows 51,618 bookings, with about 35.3 percent canceled. These filters let managers compare groups. We look at both the number of bookings and the cancellation rate, because a high rate in a very small group may be less useful for planning. The arrival-period filter lets them choose a date range.
 
@@ -70,7 +70,7 @@ These Part A patterns guide our model, but do not guarantee correct predictions 
 
 **Speaker: Patron**
 
-**On screen:** Open **Model performance**. Point to the KPI cards and comparison chart. Briefly show the importance chart, then expand **ROC & precision-recall curves**. Keep the default Selected model view and point to logistic regression, the blue line. Explain while scrolling; skip the detailed evaluation table. Technical terms are kept in the spoken text where they name the actual method or metric.
+**On screen:** Open **Prediction results**. Point to the practical result cards, then expand **Detailed model results** for the scores and comparison chart. Briefly show the importance chart, then expand **ROC & precision-recall curves**. Keep the default Selected model view and point to logistic regression, the blue line. Explain while scrolling; skip the detailed evaluation table. Technical terms are kept in the spoken text where they name the actual method or metric.
 
 **Say:**
 
@@ -92,7 +92,7 @@ Random forest has better test ranking scores. We kept our original choice instea
 
 **On screen:**
 
-1. Confirm all filters are restored and open **Follow-up queue**.
+1. Confirm all filters are restored and open **Bookings to review**.
 2. At **10%** capacity, show **1,757 bookings**, **977 historical cancellations**, and **55.6% queue cancellation rate**.
 3. Move capacity to **20%** and show **3,513 bookings to contact**.
 4. Return to **10%** and point to **Export follow-up queue**. Skip the actual download to save time.
@@ -111,7 +111,7 @@ This shows a more focused contact list. It does not prove that calls prevent can
 
 **Speaker: Patron, then Enriquez**
 
-**On screen:** Return to **Overview**. Keep the speakers visible for the closing.
+**On screen:** Return to **Booking overview**. Keep the speakers visible for the closing.
 
 **Patron — Say:**
 
