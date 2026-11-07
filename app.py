@@ -256,10 +256,10 @@ with performance:
         if curve_view=='Selected model · interactive':
             fpr,tpr,_=roc_curve(pred.is_canceled,pred.predicted_cancellation_risk)
             precision,recall,_=precision_recall_curve(pred.is_canceled,pred.predicted_cancellation_risk)
-            roc=px.line(x=fpr,y=tpr,labels={'x':'False-positive rate','y':'True-positive rate'},color_discrete_sequence=[BLUE])
+            roc=px.line(x=fpr,y=tpr,render_mode='svg',labels={'x':'False-positive rate','y':'True-positive rate'},color_discrete_sequence=[BLUE])
             roc.add_scatter(x=[0,1],y=[0,1],mode='lines',name='Chance reference',line=dict(color=INK,dash='dot'),showlegend=False)
             roc.update_traces(name='Logistic regression',selector=dict(line_color=BLUE))
-            pr=px.line(x=recall,y=precision,labels={'x':'Recall','y':'Precision'},color_discrete_sequence=[BLUE])
+            pr=px.line(x=recall,y=precision,render_mode='svg',labels={'x':'Recall','y':'Precision'},color_discrete_sequence=[BLUE])
             pr.add_hline(y=pred.is_canceled.mean(),line_dash='dot',line_color=INK)
             for fig in [roc,pr]:
                 fig.update_xaxes(range=[0,1]);fig.update_yaxes(range=[0,1.02]);fig.update_layout(showlegend=False)
