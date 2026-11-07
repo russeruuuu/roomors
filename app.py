@@ -294,5 +294,3 @@ with queue_tab:
         st.dataframe(queue[columns],hide_index=True,use_container_width=True,column_config={'review_reference':'Review reference','hotel':'Hotel','arrival_date':st.column_config.DatetimeColumn('Arrival',format='DD MMM YYYY'),'market_segment':'Segment','lead_time':st.column_config.NumberColumn('Lead time (days)'),'predicted_cancellation_risk':st.column_config.ProgressColumn('Risk score',min_value=0,max_value=1,format='%.2f')})
         st.download_button('Export follow-up queue',queue[columns].to_csv(index=False),'follow_up_queue.csv','text/csv')
         st.caption('Review references identify rows in this historical test extract; they are not real property-management reservation IDs. Exported queues exclude eventual cancellation outcomes.')
-        with st.expander('Recommended next steps'):
-            st.write('Confirm arrival intent and booking details politely. Offer modifications consistent with existing policy. A risk score alone should never trigger a penalty or cancellation. Use a randomized pilot before claiming business impact.')
