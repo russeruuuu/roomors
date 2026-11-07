@@ -1,0 +1,71 @@
+{
+  "raw_rows": 119390,
+  "analysis_rows": 87396,
+  "duplicates_removed": 31994,
+  "cancellations": 24025,
+  "cancellation_rate": 0.27489816467572886,
+  "raw_cancellation_rate": 0.37041628277075134,
+  "cutoff_validation": "2016-09-21",
+  "cutoff_test": "2017-01-28",
+  "selected_model": "Logistic regression",
+  "ranking": {
+    "flagged": 1757,
+    "canceled": 977,
+    "precision": 0.556061468412066,
+    "capture": 0.20082219938335047,
+    "base_rate": 0.2770343374523091,
+    "lift": 2.0071933086915297
+  },
+  "raw_sensitivity": {
+    "accuracy": 0.7309512902733242,
+    "precision": 0.6134655846107604,
+    "recall": 0.3378579705346797,
+    "f1": 0.4357386848847139,
+    "roc_auc": 0.7354852515357415,
+    "average_precision": 0.5662745912858047,
+    "brier": 0.18294694283328816,
+    "tn": 12320,
+    "fp": 1286,
+    "fn": 4000,
+    "tp": 2041
+  },
+  "features": [
+    "lead_time",
+    "arrival_month_number",
+    "arrival_date_day_of_month",
+    "stays_in_weekend_nights",
+    "stays_in_week_nights",
+    "adults",
+    "children",
+    "babies",
+    "hotel",
+    "meal",
+    "market_segment",
+    "distribution_channel",
+    "reserved_room_type",
+    "customer_type",
+    "country"
+  ],
+  "excluded_train_unresolved": 6851,
+  "excluded_validation_unresolved": 7632,
+  "splits": {
+    "train": {
+      "n": 45428,
+      "start": "2013-06-24",
+      "end": "2016-09-20",
+      "cancellation_rate": 0.2764374394646473
+    },
+    "validation": {
+      "n": 9924,
+      "start": "2016-09-21",
+      "end": "2017-01-27",
+      "cancellation_rate": 0.36789600967351876
+    },
+    "test": {
+      "n": 17561,
+      "start": "2017-01-28",
+      "end": "2017-08-31",
+      "cancellation_rate": 0.2770343374523091
+    }
+  }
+}

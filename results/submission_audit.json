@@ -1,0 +1,26 @@
+{
+  "raw_records": 119390,
+  "deduplicated_records": 87396,
+  "cancellations": 24025,
+  "descriptive_cancellation_rate": 0.27489816467572886,
+  "lead_time_correlation": 0.18480558777333933,
+  "selected_model": "Logistic regression",
+  "test_auc": 0.7180437097796784,
+  "test_ap": 0.469361234468511,
+  "test_true_positives": 1047,
+  "test_false_negatives": 3818,
+  "test_false_positives": 891,
+  "model_training_changed": false,
+  "verified_against_source_csv": true,
+  "ieee_pages": 6,
+  "foundation_pages": 5,
+  "presentation_script_pages": 5,
+  "verification_passed": true,
+  "remaining_human_work": [
+    "Review authors and instructor-specific submission details",
+    "Rehearse and record the 5-7 minute (target 6:30) face-visible presentation with official JRU background",
+    "Submit required files and video; verify uploaded playback"
+  ],
+  "project_name": "Roomors",
+  "report_title": "Roomors: Hotel Booking Analytics and Cancellation Risk Prioritization"
+}
